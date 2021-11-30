@@ -1,6 +1,7 @@
 import {LitElement, html, css} from 'lit';
 import maplibregl = require('maplibre-gl');
 import { mapLibreCss } from './map-libre.css';
+import {markdownToHtml} from '../utils/markdown'
 
 
 export class MapLibre extends LitElement {
@@ -9,6 +10,7 @@ export class MapLibre extends LitElement {
   centerLong: number;
   pitch: number;
   bearing: number;
+  staticmap: boolean;
   map: maplibregl.Map;
 
   static get properties() {
@@ -17,7 +19,8 @@ export class MapLibre extends LitElement {
       centerLat: {type: Number},
       centerLong: {type: Number},
       pitch: {type: Number},
-      bearing: {type: Number}
+      bearing: {type: Number},
+      staticmap: {type: Boolean}
     }
   }
   static styles = css`
@@ -42,12 +45,13 @@ export class MapLibre extends LitElement {
       this.pitch = 0;
       this.bearing = 0;
       this.map = null;
+      this.staticmap = false;
   }
   // Render the UI as a function of component state
-  render() {
+  public override render() {
     return html`<div id="map"></div><slot></slot>`;
   }
-  firstUpdated() {
+  public override firstUpdated() {
     if (this.map) {
       this.map.remove();
     }
@@ -56,11 +60,20 @@ export class MapLibre extends LitElement {
         center: [this.centerLong,this.centerLat],
         zoom: this.zoom,
         pitch: this.pitch,
-        bearing: this.bearing
+        bearing: this.bearing,
+        interactive: !this.staticmap
     });
     this.addEventListener('addlayer', (e)=>this._addLayer(e));
   }
-  _addLayer(event) {
+  public override updated(changedProperties) {
+    if (this.map && changedProperties.has('staticmap')) {
+      const handlers = ["scrollZoom", "boxZoom", "dragRotate", "dragPan", "keyboard", "doubleClickZoom", "touchZoomRotate"];
+      for (const handler of handlers) {
+        this.staticmap ? this.map[handler].disable() : this.map[handler].enable();
+      }
+    }
+  }
+  private _addLayer(event) {
     const SourceTypeToMLType = {
       "tms": "raster"
     }    
@@ -72,7 +85,8 @@ export class MapLibre extends LitElement {
       type: mlSourceType,
       tiles: url
     }
-    source.attribution ? mlSource.attribution = source.attribution: null;
+
+    source.attribution ? mlSource.attribution = markdownToHtml(source.attribution): null;
     source.tileSize ? mlSource.tileSize = source.tileSize: null;
     const mapLibreLayer:maplibregl.AnyLayer = {
       id: id,
