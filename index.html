@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <style>
+        map-libre {
+            border: 1px solid black;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <script type="module" src="src/index.ts"></script>
+    <map-libre>
+        <map-style>
+            <map-layer-osm></map-layer-osm>
+        </map-style>
+        <map-zoom></map-zoom>
+        <map-scale></map-scale>
+        <map-toolbar-toolpanel>
+            <map-toolbar>
+                <map-search></map-search>
+                <map-catalog>
+                    <map-catalog-group>
+                        <map-catalog-layer></map-catalog-layer>
+                    </map-catalog-group>
+                </map-catalog>
+                <map-measure></map-measure>
+                <map-info></map-info>
+                <map-3d></map-3d>
+                <map-gps></map-gps>
+                <map-edit></map-edit>
+            </map-toolbar>
+        </map-toolbar-toolpanel>
+        <map-style-info>
+            <map-style-group>
+                <map-layer-panel>
+                    <map-layer-title></map-layer-title>
+                    <map-layer-transparency></map-layer-transparency>
+                    <map-layer-legend>
+                        <map-layer-legend-title></map-layer-legend-title>
+                        <map-layer-legend-item></map-layer-legend-item>
+                        <map-layer-legend-abstract></map-layer-legend-abstract>
+                    </map-layer-legend>
+                </map-layer-panel>
+            </map-style-group>
+        </map-style-info>
+    </map-libre>
+</body>
+</html>

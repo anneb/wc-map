@@ -1,0 +1,17 @@
+{
+  "name": "wc-map",
+  "version": "0.1.0",
+  "description": "Map configuration and UI using web components",
+  "scripts": {
+    "start": "npx parcel index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anne Blankert, Geodan Research",
+  "license": "ISC",
+  "dependencies": {
+    "lit": "^2.0.2",
+    "maplibre-gl": "^1.15.2",
+    "parcel": "^2.0.1",
+    "parcel-plugin-inline-lit-element": "0.0.2"
+  }
+}
