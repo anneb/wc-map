@@ -13,6 +13,8 @@ export class MapLibre extends LitElement {
   staticmap: boolean;
   map: maplibregl.Map;
 
+  _zoomChange: Array<(zoom:number)=>void>
+
   static get properties() {
     return {
       zoom: {type: Number},
@@ -46,15 +48,13 @@ export class MapLibre extends LitElement {
       this.bearing = 0;
       this.map = null;
       this.staticmap = false;
+      this._zoomChange = [];
   }
   // Render the UI as a function of component state
   public override render() {
     return html`<div id="map"></div><slot></slot>`;
   }
   public override firstUpdated() {
-    if (this.map) {
-      this.map.remove();
-    }
     this.map = new maplibregl.Map({
         container: this.shadowRoot.querySelector('#map') as HTMLElement,
         center: [this.centerLong,this.centerLat],
@@ -64,6 +64,9 @@ export class MapLibre extends LitElement {
         interactive: !this.staticmap
     });
     this.addEventListener('addlayer', (e)=>this._addLayer(e));
+    this.addEventListener('registerzoomchange', (e)=>this._registerZoomChange(e as CustomEvent));
+    this.map.on('zoomend', (e)=>this._zoomChanged(e));
+    this.map.on('load', (e)=>this._zoomChanged(e));
   }
   public override updated(changedProperties) {
     if (this.map && changedProperties.has('staticmap')) {
@@ -94,6 +97,14 @@ export class MapLibre extends LitElement {
       source: mlSource
     }
     this.map.addLayer(mapLibreLayer);
+  }
+  private _registerZoomChange(event:CustomEvent) {
+    this._zoomChange.push(event.detail);
+    event.stopPropagation();
+  }
+  private _zoomChanged(event) {
+    const zoom = this.map.getZoom();
+    this._zoomChange.forEach(callback=>callback(zoom))
   }
 }
 
