@@ -7,9 +7,16 @@
     <title>Demo</title>
     <style>
         map-libre {
+            position: relative;
             border: 1px solid black;
             width: 200px;
             height: 200px;
+        }
+        map-libre::part(map-zoom),map-zoom {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: white;
         }
     </style>
 </head>

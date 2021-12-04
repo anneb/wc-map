@@ -12,8 +12,7 @@ export class MapLibre extends LitElement {
   bearing: number;
   staticmap: boolean;
   map: maplibregl.Map;
-
-  _zoomChange: Array<(zoom:number)=>void>
+  childElements: Array<Element>;
 
   static get properties() {
     return {
@@ -48,11 +47,12 @@ export class MapLibre extends LitElement {
       this.bearing = 0;
       this.map = null;
       this.staticmap = false;
-      this._zoomChange = [];
-  }
+    }
   // Render the UI as a function of component state
   public override render() {
-    return html`<div id="map"></div><slot></slot>`;
+    return html`<div id="map"></div>
+      <map-zoom part="map-zoom" .zoom=${this.zoom}></map-zoom>
+      <slot @slotchange="${(e)=>this._slotChange(e)}"></slot>`;
   }
   public override firstUpdated() {
     this.map = new maplibregl.Map({
@@ -64,7 +64,6 @@ export class MapLibre extends LitElement {
         interactive: !this.staticmap
     });
     this.addEventListener('addlayer', (e)=>this._addLayer(e));
-    this.addEventListener('registerzoomchange', (e)=>this._registerZoomChange(e as CustomEvent));
     this.map.on('zoomend', (e)=>this._zoomChanged(e));
     this.map.on('load', (e)=>this._zoomChanged(e));
   }
@@ -98,13 +97,21 @@ export class MapLibre extends LitElement {
     }
     this.map.addLayer(mapLibreLayer);
   }
-  private _registerZoomChange(event:CustomEvent) {
-    this._zoomChange.push(event.detail);
-    event.stopPropagation();
-  }
   private _zoomChanged(event) {
-    const zoom = this.map.getZoom();
-    this._zoomChange.forEach(callback=>callback(zoom))
+    this.zoom = this.map.getZoom();
+    for (const child of this.childElements) {
+      child.setAttribute("zoom", this.zoom.toString());
+      //child.zoom = this.zoom;
+      //console.log (child.zoom);
+    }
+  }
+  _slottedChildren() {
+    const slot = this.shadowRoot.querySelector('slot');
+    const childNodes = slot.assignedElements({flatten: true});
+    return Array.from(childNodes);
+  }
+  private _slotChange(event) {
+    this.childElements = this._slottedChildren();
   }
 }
 
