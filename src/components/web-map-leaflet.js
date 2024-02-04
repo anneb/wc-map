@@ -40,7 +40,7 @@ class WebMapLeaflet extends WebMap {
           const response = await fetch('./world.geo.json');
           if (response.ok) {
             const geoJson = await response.json();
-            window.L.geoJSON(geoJson).addTo(map);
+            window.L.geoJSON(geoJson, {attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'}).addTo(map);
             this.dispatchEvent(new CustomEvent('map-ready'));
             console.log('web-map-leaflet map-ready event dispatched')
             this.status = 'web-map-leaflet ready';

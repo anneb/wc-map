@@ -60,7 +60,7 @@ class WebMapLibreGL extends WebMap {
               source: {
                 type: 'geojson',
                 data: './world.geo.json',
-                attribution: 'Natural Earth'
+                attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'
               },
               paint: {
                 'fill-color': '#bbcce4',
