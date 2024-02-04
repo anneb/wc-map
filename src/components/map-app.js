@@ -25,6 +25,7 @@ class MapApp extends LitElement {
         .app {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap;
             padding: 10px;
             gap: 10px;
         }
