@@ -1,9 +1,13 @@
 import { html } from 'lit';
-
 import { WebMap } from './web-map.js';
 
 class WebMapLeaflet extends WebMap {
 
+  constructor() {
+    super();
+    this.map = null;
+    this.status = 'web-map-leaflet constructor';
+  }
   render() {
     return html`
       <style>
@@ -36,17 +40,10 @@ class WebMapLeaflet extends WebMap {
         this.status = 'Leaflet script loaded'
         try {
           // Add the map
-          const map = new window.L.Map(this.shadowRoot.getElementById('map')).setView([52.3522, 5.1], 5);
-          const response = await fetch('./world.geo.json');
-          if (response.ok) {
-            const geoJson = await response.json();
-            window.L.geoJSON(geoJson, {attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'}).addTo(map);
-            this.dispatchEvent(new CustomEvent('map-ready'));
-            console.log('web-map-leaflet map-ready event dispatched')
-            this.status = 'web-map-leaflet ready';
-          } else {
-            this.status = 'web-map-leaflet failed to fetch GeoJSON';
-          }
+          this.map = new window.L.Map(this.shadowRoot.getElementById('map')).setView([52.3522, 5.1], 5);
+          console.log('web-map-leaflet map-ready event dispatched')
+          this.status = 'web-map-leaflet ready';
+          this.mapReady();
         } catch (error) {
           this.status = error.message;
         }
@@ -54,6 +51,27 @@ class WebMapLeaflet extends WebMap {
       document.head.appendChild(script);
     } catch (error) {
       this.status = error.message;
+    }
+  }
+  activateNativeEventListener(event) {
+    console.log ('web-map-leaflet: registerNativeEvent for ' + event)
+    if (this.map) {
+      switch (event) {
+        case 'map-mousemove':
+          this.map.on('mousemove', (e) => {
+            this.dispatchEvent(new CustomEvent('map-mousemove', { detail: {
+                originalEvent: e.originalEvent,
+                offsetX: e.containerPoint.x,
+                offsetY: e.containerPoint.y,
+                lat: e.latlng.lat,
+                lng: e.latlng.lng
+              }}
+            ));
+          });
+          break;
+      }
+    } else {
+      console.error ('web-map-leaflet: map not ready for ' + event)
     }
   }
 }

@@ -25,9 +25,12 @@ class MapApp extends LitElement {
         .app {
             display: flex;
             flex-direction: row;
-            flex-wrap: wrap;
             padding: 10px;
             gap: 10px;
+            overflow-x: auto;
+        }
+        .app > * {
+           flex-shrink: 0;
         }
     `;
 
@@ -35,12 +38,16 @@ class MapApp extends LitElement {
     return html`
       <div class="app">
         <web-map></web-map>
-        <web-map-leaflet></web-map-leaflet>
+        <web-map-leaflet @map-mousemove="${(e)=>this.mouseMovedOnMap(e)}"></web-map-leaflet>
         <web-maplibre-gl></web-maplibre-gl>
         <web-mapbox-gl></web-mapbox-gl>
         <web-map-openlayers></web-map-openlayers>
       </div>
+      <div class="output">output</div>
     `;
+  }
+  mouseMovedOnMap(e) {
+    this.shadowRoot.querySelector('.output').textContent = `${e.detail.offsetX}, ${e.detail.offsetY} : ${e.detail.lat}, ${e.detail.lng}`;
   }
 }
 

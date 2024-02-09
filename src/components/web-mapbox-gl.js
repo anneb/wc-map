@@ -54,7 +54,7 @@ class WebMapboxGL extends WebMap {
           map.on('load', () => {
             map.on('idle', () => {
               this.dispatchEvent(new CustomEvent('map-ready'));
-              console.log('web-maplibre-gl map-ready event dispatched')
+              console.log('web-mapbox-gl map-ready event dispatched')
               this.status = 'web-mapbox-gl ready';
             });
             map.addLayer({
