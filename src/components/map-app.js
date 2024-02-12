@@ -1,11 +1,11 @@
 // map-app.js
 import { LitElement, html, css } from 'lit';
 
-import './web-map.js';
-import './web-map-leaflet.js';
-import './web-maplibre-gl.js';
-import './web-mapbox-gl.js';
-import './web-map-openlayers.js';
+import './maps/web-map.js';
+import './maps/web-map-leaflet.js';
+import './maps/web-maplibre-gl.js';
+import './maps/web-mapbox-gl.js';
+import './maps/web-map-openlayers.js';
 
 class MapApp extends LitElement {
   // create styles for this element

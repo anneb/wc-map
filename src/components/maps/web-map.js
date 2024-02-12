@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { APIkeys } from '../keys.js';
+import { APIkeys } from '../../keys.js';
 
 const NEWEVENT = 1;
 const REGISTEREDEVENT = 2;
