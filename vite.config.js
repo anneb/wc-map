@@ -1,5 +1,8 @@
 // vite.config.js
 export default {
     base: '',
-    // other options...
+    root: './',
+    build: {
+      outDir: 'dist'
+    }// other options...
   }
