@@ -7,6 +7,7 @@ import View from 'ol/View.js';
 import {fromLonLat} from 'ol/proj.js';
 
 import { WebMap } from './web-map.js';
+import { fetchText } from '../../utils/fetchdata.js';
 
 class WebMapOpenLayers extends WebMap {
 
@@ -28,14 +29,13 @@ class WebMapOpenLayers extends WebMap {
       // Fetch and apply the external CSS
       if (!WebMapOpenLayers.externalStyles) {
         this.status = 'web-map-openlayers fetching external CSS'
-        const response = await fetch('https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css');
-        WebMapOpenLayers.externalStyles = await response.text();
+        WebMapOpenLayers.externalStyles = await fetchText('https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css');          
         this.status = 'web-map-openlayers external CSS fetched'
         this.requestUpdate();
-      }      
+      }  
       // Add the map
       const worldSource = new VectorSource({
-        url: './world.geo.json',
+        url: './data/world.geo.json',
         format: new GeoJSON(),
         attributions: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'
       })
@@ -59,6 +59,7 @@ class WebMapOpenLayers extends WebMap {
         console.log('web-map-openlayers map-ready event dispatched');
       });
     } catch (error) {
+      console.error('web-map-openlayers error:', error.message);
       this.status = error.message;
     }
   }

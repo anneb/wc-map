@@ -1,6 +1,7 @@
 import { html } from 'lit';
 
 import { WebMap } from './web-map.js';
+import { fetchText } from '../../utils/fetchdata.js';
 
 class WebMapboxGL extends WebMap {
 
@@ -22,17 +23,16 @@ class WebMapboxGL extends WebMap {
       // Fetch and apply the external CSS
       if (!WebMapboxGL.externalStyles) {
         this.status = 'web-mapbox-gl fetching external CSS'
-        // fetch mapbox-gl.css from unpkg.com
-        const response = await fetch('https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css');
-        WebMapboxGL.externalStyles = await response.text();
-        this.status = 'web-mapbox-gl external CSS fetched'
-        this.requestUpdate();
-      }
-
+        fetchText('https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css').then((text) => {
+          WebMapboxGL.externalStyles = text;
+          this.status = 'web-mapbox-gl external CSS fetched'
+          this.requestUpdate();
+        });
+      } 
       // Inject the mapbox script
       const script = document.createElement('script');
       script.src = 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js';
-      this.status = 'injecting MapboxGL script'
+      this.status = 'injecting MapboxGL script';
       script.onload = async () => {
         this.status = 'MapboxGL script loaded'
         try {
@@ -52,17 +52,15 @@ class WebMapboxGL extends WebMap {
           // set the mapbox access token
           mapboxgl.accessToken = WebMapboxGL.keys.mapbox;
           map.on('load', () => {
-            map.on('idle', () => {
-              this.dispatchEvent(new CustomEvent('map-ready'));
-              console.log('web-mapbox-gl map-ready event dispatched')
-              this.status = 'web-mapbox-gl ready';
-            });
+            this.status = 'web-mapbox-gl ready';
+            this.dispatchEvent(new CustomEvent('map-ready'));
+            console.log('web-mapbox-gl map-ready event dispatched')
             map.addLayer({
               id: 'world',
               type: 'fill',
               source: {
                 type: 'geojson',
-                data: './world.geo.json',
+                data: './data/world.geo.json',
                 attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'
               },
               paint: {
@@ -78,6 +76,7 @@ class WebMapboxGL extends WebMap {
       document.head.appendChild(script);
     } catch (error) {
       this.status = error.message;
+      console.error('web-mapbox-gl: ' + error.message)
     }
   }
 }

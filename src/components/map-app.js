@@ -6,6 +6,7 @@ import './maps/web-map-leaflet.js';
 import './maps/web-maplibre-gl.js';
 import './maps/web-mapbox-gl.js';
 import './maps/web-map-openlayers.js';
+import './tools/map-tool-coordinates.js';
 
 class MapApp extends LitElement {
   // create styles for this element
@@ -38,12 +39,13 @@ class MapApp extends LitElement {
     return html`
       <div class="app">
         <web-map></web-map>
-        <web-map-leaflet @map-mousemove="${(e)=>this.mouseMovedOnMap(e)}"></web-map-leaflet>
+        <web-map-leaflet map-layers="./layers/world.json"></web-map-leaflet>
         <web-maplibre-gl></web-maplibre-gl>
         <web-mapbox-gl></web-mapbox-gl>
         <web-map-openlayers></web-map-openlayers>
       </div>
       <div class="output">output</div>
+      <map-tool-coordinates for="web-map-leaflet"></map-tool-coordinates>
     `;
   }
   mouseMovedOnMap(e) {

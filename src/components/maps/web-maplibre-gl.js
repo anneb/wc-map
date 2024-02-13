@@ -1,6 +1,7 @@
 import { html } from 'lit';
 
 import { WebMap } from './web-map.js';
+import { fetchText } from '../../utils/fetchdata.js';
 
 class WebMapLibreGL extends WebMap {
 
@@ -21,14 +22,14 @@ class WebMapLibreGL extends WebMap {
     try {
       // Fetch and apply the external CSS
       if (!WebMapLibreGL.externalStyles) {
-        this.status = 'web-maplibre-gl fetching external CSS'
+        this.status = 'web-maplibre-gl fetching external CSS'        
         // fetch maplibre-gl.css from unpkg.com
-        const response = await fetch('https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css');
-        WebMapLibreGL.externalStyles = await response.text();
-        this.status = 'web-maplibre-gl external CSS fetched'
-        this.requestUpdate();
+        fetchText('https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css').then((text) => {
+          WebMapLibreGL.externalStyles = text;
+          this.status = 'web-maplibre-gl external CSS fetched'
+          this.requestUpdate();
+        });
       }
-
       // Inject the mapboxgl script
       const script = document.createElement('script');
       script.src = 'https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.js';
@@ -59,7 +60,7 @@ class WebMapLibreGL extends WebMap {
               type: 'fill',
               source: {
                 type: 'geojson',
-                data: './world.geo.json',
+                data: './data/world.geo.json',
                 attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'
               },
               paint: {
@@ -74,6 +75,7 @@ class WebMapLibreGL extends WebMap {
       };
       document.head.appendChild(script);
     } catch (error) {
+      console.error('web-maplibre-gl: ' + error.message)
       this.status = error.message;
     }
   }

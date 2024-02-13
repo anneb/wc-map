@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import { WebMap } from './web-map.js';
+import { fetchText, fetchLayer } from '../../utils/fetchdata.js';
 
 class WebMapLeaflet extends WebMap {
 
@@ -16,22 +17,21 @@ class WebMapLeaflet extends WebMap {
       <div id="map"></div>
     `;
   }
-
   static externalStyles = '';
 
   async connectedCallback() {
     super.connectedCallback();
     this.status = 'web-map-leaflet connected to the DOM'
     try {
-      // Fetch and apply the external CSS
+      // Fetch and apply the external CSS when loaded
       if (!WebMapLeaflet.externalStyles) {
         this.status = 'web-map-leaflet fetching external CSS'
-        const response = await fetch('https://unpkg.com/leaflet@1.7.1/dist/leaflet.css');
-        WebMapLeaflet.externalStyles = await response.text();
-        this.status = 'web-map-leaflet external CSS fetched'
-        this.requestUpdate();
+        fetchText('https://unpkg.com/leaflet@1.7.1/dist/leaflet.css').then((text) => {
+          WebMapLeaflet.externalStyles = text;
+          this.status = 'web-map-leaflet external CSS fetched'
+          this.requestUpdate();
+        });        
       }
-
       // Inject the Leaflet script
       const script = document.createElement('script');
       script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
@@ -50,10 +50,26 @@ class WebMapLeaflet extends WebMap {
       };
       document.head.appendChild(script);
     } catch (error) {
+      console.error('web-map-leaflet: ' + error.message)
       this.status = error.message;
     }
   }
-  activateNativeEventListener(event) {
+  nativeAddLayer(layer) {
+    if (!this.map) {
+      console.error('web-map-leaflet: map not ready for addLayer')
+      return;
+    }
+    // add layer to leaflet map
+    switch (layer?.source?.type) {
+      case 'geojson':
+        window.L.geoJSON(layer.source.data).addTo(this.map);
+        break;
+    }
+  }
+  nativeUpdateView() {
+    this.map?.setView([this.lat, this.lon], this.zoom);
+  }
+  nativeActivateEventListener(event) {
     console.log ('web-map-leaflet: registerNativeEvent for ' + event)
     if (this.map) {
       switch (event) {
