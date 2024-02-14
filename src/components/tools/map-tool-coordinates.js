@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { WebMap } from "../maps/web-map";
 
 
 export class MapToolCoordinates extends LitElement {
@@ -12,14 +13,30 @@ export class MapToolCoordinates extends LitElement {
     this.for = '';
     this.lat = this.lng = null;
   }
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.for) {
+      for (let parentNode = this.parentNode; parentNode; parentNode = parentNode.parentNode) {      
+        if (parentNode instanceof WebMap) {
+          this.el = parentNode;
+          break;
+        }
+      }
+    }
+    if (this.el) {
+      this.el.addEventListener('map-mousemove', this.boundMouseMovedOnMap);
+    }
+  }
   shouldUpdate(changedProperties) {
     if (changedProperties.has('for')) {
-      if (this.el) {
+      if (this.for && this.el) {
         this.el.removeEventListener('map-mousemove', this.boundMouseMovedOnMap);
       }
-      this.el = this.getRootNode().querySelector(this.for);
-      if (this.el) {
-        this.el.addEventListener('map-mousemove', this.boundMouseMovedOnMap);
+      if (this.for) {
+        this.el = this.getRootNode().querySelector(this.for);
+        if (this.el) {
+          this.el.addEventListener('map-mousemove', this.boundMouseMovedOnMap);
+        }
       }
     }
     return true;

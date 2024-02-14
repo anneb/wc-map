@@ -16,25 +16,29 @@ export class WebMap extends LitElement {
     mapStyle: { type: String, attribute: 'map-style' },
     mapLayers: { type: String, attribute: 'map-layers'},
   }
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-        width: 400px;
-        height: 400px;
-      }
-      #map {
-        width: 100%;
-        height: 100%;
-      }
-    `;
-  }
+
+  // inherit below style in derived classes as:
+  // static styles = [super.styles, css`...`];
+  static styles = css`
+    :host {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #map {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    };
+  `
   constructor() {
     super();
     this.map = null;
     this.lat = this.lon = this.zoom = this.pitch = this.bearing = 0;
     this.eventTypes = {}; // the events to listen for
   }
+
   shouldUpdate(changedProperties) {
     if (changedProperties.has('mapLayers') || changedProperties.has('mapStyle')) {
       this.loadLayersAndStyles();      

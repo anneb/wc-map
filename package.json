@@ -4,7 +4,7 @@
   "description": "A web-components based set of components that together form a web gis application",
   "type": "module",
   "scripts": {
-    "start": "vite --open",
+    "start": "vite --open --host",
     "build:withmaps": "vite build --config vite.config.srcmaps.js",
     "build": "vite build",
     "test": "cypress run"
