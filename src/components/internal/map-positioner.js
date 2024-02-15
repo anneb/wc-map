@@ -1,6 +1,40 @@
 import { LitElement, html, css } from 'lit-element';
-
+/**
+ * @element map-positioner - An internal helper component to position elements on a map, through slots
+ * 
+ * @description - A component to position elements on top of a container, through slots
+ * 
+ * @slot top-left - The top left element
+ * @slot top-center - The top center element
+ * @slot top-right - The top right element
+ * @slot middle-center - The middle center element
+ * @slot bottom-left - The bottom left element
+ * @slot bottom-center - The bottom center element
+ * @slot bottom-right - The bottom right element
+ * 
+ * @prop {Number} zIndex - The optional z-index of slotted elements (default: undefined, 1100 is a good value for leaflet)
+ * 
+ * @example
+ * <map-positioner>
+ * <div slot="top-left">Top left</div>
+ * <div slot="top-center">Top center</div>
+ * <div slot="top-right">Top right</div>
+ * <div slot="middle-center">Middle center</div>
+ * <div slot="bottom-left">Bottom left</div>
+ * <div slot="bottom-center">Bottom center</div>
+ * <div slot="bottom-right">Bottom right</div>
+ * </map-positioner>
+ */
 export class MapPositioner extends LitElement {
+  constructor() {
+    super();
+    this.zIndex = undefined;
+  }
+  static get properties() {
+    return {
+      zIndex: { type: Number, attribute: 'z-index' }
+    }
+  }
   static styles = css`
   :host {
     position: absolute;
@@ -15,7 +49,7 @@ export class MapPositioner extends LitElement {
     background: transparent;
     border: 1px solid black;
   }
-  .top, .bottom, .left, .right {
+  .top, .bottom, .left, .right, .middle {
     position: absolute;
     pointer-events: auto;
     cursor: pointer;
@@ -34,14 +68,27 @@ export class MapPositioner extends LitElement {
     left: 50%;
     transform: translateX(-50%);
   }
+  .middle {
+    top: 50%;
+    transform: translateY(-50%);
+  }
   .right {
     right: 0;
     background-color: lightcoral;
   }`;
+  _renderExtraStyles() {
+    if (this.zIndex !== undefined) {
+      return css`.outercontainer {z-index: ${this.zIndex};}`;
+    }
+    return '';
+  }
 
   render() {
     return html`
-      <div class="outercontainer">
+        <style>
+          ${this._renderExtraStyles()}
+        </style>
+        <div class="outercontainer">
         <div class="top left">
           <slot name="top-left"></slot>
         </div>
@@ -50,6 +97,9 @@ export class MapPositioner extends LitElement {
         </div>
         <div class="top right">
           <slot name="top-right"></slot>
+        </div>
+        <div class="middle center">
+          <slot name="middle-center"></slot>
         </div>
         <div class="bottom left">
           <slot name="bottom-left"></slot>

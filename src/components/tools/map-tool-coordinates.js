@@ -1,12 +1,18 @@
 import { LitElement, html } from "lit";
 import { WebMap } from "../maps/web-map";
 
-
+/**
+  * @prop {String} for - The selector for the map to listen to
+  * @attr lat - The latitude of the mouse position, set by the map
+  * @attr lng - The longitude of the mouse position, set by the map
+*/
 export class MapToolCoordinates extends LitElement {
-  static properties = {
-    for: { type: String },
-    lat: { type: Number, reflect: true},
-    lng: { type: Number, reflect: true}
+  static get properties() {
+    return {
+      for: { type: String },
+      lat: { type: Number, reflect: true},
+      lng: { type: Number, reflect: true}
+    }
   }
   constructor() {
     super();
@@ -24,18 +30,18 @@ export class MapToolCoordinates extends LitElement {
       }
     }
     if (this.el) {
-      this.el.addEventListener('map-mousemove', this.boundMouseMovedOnMap);
+      this.el.addEventListener('map-mousemove', this._boundMouseMovedOnMap);
     }
   }
   shouldUpdate(changedProperties) {
     if (changedProperties.has('for')) {
       if (this.for && this.el) {
-        this.el.removeEventListener('map-mousemove', this.boundMouseMovedOnMap);
+        this.el.removeEventListener('map-mousemove', this._boundMouseMovedOnMap);
       }
       if (this.for) {
         this.el = this.getRootNode().querySelector(this.for);
         if (this.el) {
-          this.el.addEventListener('map-mousemove', this.boundMouseMovedOnMap);
+          this.el.addEventListener('map-mousemove', this._boundMouseMovedOnMap);
         }
       }
     }
@@ -47,11 +53,11 @@ export class MapToolCoordinates extends LitElement {
     }
     return html`Latitude: ${this.lat}, Longitude: ${this.lng}`;        
   }
-  mouseMovedOnMap(e) {
+  _mouseMovedOnMap(e) {
     this.lat = e.detail.lat;
     this.lng = e.detail.lng;
   }
-  boundMouseMovedOnMap = (e) => this.mouseMovedOnMap(e);
+  _boundMouseMovedOnMap = (e) => this._mouseMovedOnMap(e);
 
 }
 

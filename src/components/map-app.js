@@ -34,6 +34,10 @@ class MapApp extends LitElement {
         .app > * {
            flex-shrink: 0;
         }
+        div[slot="middle-center"] {
+          background-color: lightgreen;
+        }
+        .
     `;
 
   render() {
@@ -60,6 +64,10 @@ class MapApp extends LitElement {
           <div slot="top-left">14</div>
           <div slot="top-left">15</div>
           <span slot="top-left">aa</span>
+          <div slot="middle-center">
+            <div>center above</div>
+            <div>center below</div>
+          </div>
           <div slot="top-right">Legenda</div>
         </web-map-leaflet>
         <web-maplibre-gl></web-maplibre-gl>

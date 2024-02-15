@@ -7,14 +7,16 @@ const REGISTEREDEVENT = 2;
 
 export class WebMap extends LitElement {
   static keys = APIkeys;
-  static properties = {
-    lat: { type: Number },
-    lon: { type: Number },
-    zoom: { type: Number },
-    pitch: { type: Number },
-    bearing: { type: Number },
-    mapStyle: { type: String, attribute: 'map-style' },
-    mapLayers: { type: String, attribute: 'map-layers'},
+  static get properties() {
+    return {
+      lat: { type: Number },
+      lon: { type: Number },
+      zoom: { type: Number },
+      pitch: { type: Number },
+      bearing: { type: Number },
+      mapStyle: { type: String, attribute: 'map-style' },
+      mapLayers: { type: String, attribute: 'map-layers'}
+    };
   }
 
   // inherit below style in derived classes as:
@@ -36,7 +38,7 @@ export class WebMap extends LitElement {
     super();
     this.map = null;
     this.lat = this.lon = this.zoom = this.pitch = this.bearing = 0;
-    this.eventTypes = {}; // the events to listen for
+    this._eventTypes = {}; // the events to listen for
   }
 
   shouldUpdate(changedProperties) {
@@ -70,8 +72,8 @@ export class WebMap extends LitElement {
   addEventListener (event, listener, options) {
     console.log('add event listener for ' + event);
     super.addEventListener(event, listener, options);
-    if (!this.eventTypes[event]) {
-      this.eventTypes[event] = NEWEVENT;
+    if (!this._eventTypes[event]) {
+      this._eventTypes[event] = NEWEVENT;
       this.addEventListeners()
     }
   }
@@ -108,10 +110,10 @@ export class WebMap extends LitElement {
   }
   addEventListeners () {
     if (this.map) {
-      for (const event in this.eventTypes) {
-        if (this.eventTypes[event] === NEWEVENT) {
+      for (const event in this._eventTypes) {
+        if (this._eventTypes[event] === NEWEVENT) {
           this.nativeActivateEventListener(event);
-          this.eventTypes[event] = REGISTEREDEVENT;
+          this._eventTypes[event] = REGISTEREDEVENT;
         }
       }
     }

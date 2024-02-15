@@ -16,10 +16,11 @@ class WebMapLeaflet extends WebMap {
         ${WebMapLeaflet.externalStyles}
       </style>
       <div id="map"></div>
-      <map-positioner>
+      <map-positioner z-index="1100">
         <slot name="top-left" slot="top-left"></slot>
         <slot name="top-center" slot="top-center"></slot>
         <slot name="top-right" slot="top-right"></slot>
+        <slot name="middle-center" slot="middle-center"></slot>
         <slot name="bottom-left" slot="bottom-left"></slot>
         <slot name="bottom-center" slot="bottom-center"></slot>
         <slot name="bottom-right" slot="bottom-right"></slot>
