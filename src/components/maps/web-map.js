@@ -6,7 +6,9 @@ const NEWEVENT = 1;
 const REGISTEREDEVENT = 2;
 
 export class WebMap extends LitElement {
-  static keys = APIkeys;
+
+  static _keys = APIkeys;
+
   static get properties() {
     return {
       lat: { type: Number },
@@ -33,20 +35,21 @@ export class WebMap extends LitElement {
       width: 100%;
       height: 100%;
     };
-  `
+  `;
+
   constructor() {
     super();
-    this.map = null;
+    this._map = null;
     this.lat = this.lon = this.zoom = this.pitch = this.bearing = 0;
     this._eventTypes = {}; // the events to listen for
   }
 
   shouldUpdate(changedProperties) {
     if (changedProperties.has('mapLayers') || changedProperties.has('mapStyle')) {
-      this.loadLayersAndStyles();      
+      this._loadLayersAndStyles();      
     }
     if (changedProperties.has('lat') || changedProperties.has('lon') || changedProperties.has('zoom') || changedProperties.has('pitch') || changedProperties.has('bearing')) {
-      this.nativeUpdateView();
+      this._nativeUpdateView();
     }
     return true;
   }
@@ -74,10 +77,10 @@ export class WebMap extends LitElement {
     super.addEventListener(event, listener, options);
     if (!this._eventTypes[event]) {
       this._eventTypes[event] = NEWEVENT;
-      this.addEventListeners()
+      this._addEventListeners()
     }
   }
-  loadLayersAndStyles() {
+  _loadLayersAndStyles() {
     if (!this.fetchingLayersAndStyles) {
       this.fetchingLayersAndStyles = true; 
       if ((this.mapLayers && !this.mapLayersArray) || (this.mapStyle && !this.mapStyleObject)) {
@@ -87,55 +90,55 @@ export class WebMap extends LitElement {
           }
           this.mapLayersArray = mapLayers;
           this.mapStyleObject = mapStyle;      
-          this.updateStyle();
-          this.updateLayers();
+          this._updateStyle();
+          this._updateLayers();
           this.fetchingLayersAndStyles = false;
         });
       } else {
-        this.updateStyle();
-        this.updateLayers();
+        this._updateStyle();
+        this._updateLayers();
         this.fetchingLayersAndStyles = false;
       }
     }
   }
-  async updateLayers() {
-    if (this.map && this.mapLayersArray) {
+  async _updateLayers() {
+    if (this._map && this.mapLayersArray) {
       for (const layer of this.mapLayersArray) {
         await fetchSource(layer);
-        this.nativeAddLayer(layer);
+        this._nativeAddLayer(layer);
       };
     }
   }
-  updateStyle() {
+  _updateStyle() {
   }
-  addEventListeners () {
-    if (this.map) {
+  _addEventListeners () {
+    if (this._map) {
       for (const event in this._eventTypes) {
         if (this._eventTypes[event] === NEWEVENT) {
-          this.nativeActivateEventListener(event);
+          this._nativeActivateEventListener(event);
           this._eventTypes[event] = REGISTEREDEVENT;
         }
       }
     }
   }
-  warnNotImplemented(functionName) {
+  _warnNotImplemented(functionName) {
     if (this.constructor.name !== 'WebMap') {
       console.warn(`${functionName} not yet implemented for ${this.constructor.name}`);
     }
   }
-  nativeUpdateView() {
-    this.warnNotImplemented('nativeUpdateView');
+  _nativeUpdateView() {
+    this._warnNotImplemented('nativeUpdateView');
   }
-  nativeActivateEventListener(event) {
-    this.warnNotImplemented('nativeActivateEventListener');
+  _nativeActivateEventListener(event) {
+    this._warnNotImplemented('nativeActivateEventListener');
   }
-  nativeAddLayer(layer) {
-    this.warnNotImplemented('nativeAddLayer');
+  _nativeAddLayer(layer) {
+    this._warnNotImplemented('nativeAddLayer');
   }
-  mapReady(e) {
-    this.nativeUpdateView();
-    this.addEventListeners();
-    this.loadLayersAndStyles();
+  _mapReady(e) {
+    this._nativeUpdateView();
+    this._addEventListeners();
+    this._loadLayersAndStyles();
     this.dispatchEvent(new CustomEvent('map-ready'));
   }
 }

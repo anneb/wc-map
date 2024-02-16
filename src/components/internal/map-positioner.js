@@ -64,13 +64,13 @@ export class MapPositioner extends LitElement {
     left: 0;
     background-color: lightblue;
   }
-  .center {
-    left: 50%;
-    transform: translateX(-50%);
-  }
   .middle {
     top: 50%;
     transform: translateY(-50%);
+  }
+  .center {
+    left: 50%;
+    transform: translateX(-50%);
   }
   .right {
     right: 0;

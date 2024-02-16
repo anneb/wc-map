@@ -8,23 +8,23 @@ class WebMapboxGL extends WebMap {
   render() {
     return html`
       <style>
-        ${WebMapboxGL.externalStyles}
+        ${WebMapboxGL._externalStyles}
       </style>
       <div id="map"></div>
     `;
   }
 
-  static externalStyles = '';
+  static _externalStyles = '';
 
   async connectedCallback() {
     super.connectedCallback();
     this.status = 'web-mapbox-gl connected to the DOM'
     try {
       // Fetch and apply the external CSS
-      if (!WebMapboxGL.externalStyles) {
+      if (!WebMapboxGL._externalStyles) {
         this.status = 'web-mapbox-gl fetching external CSS'
         fetchText('https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css').then((text) => {
-          WebMapboxGL.externalStyles = text;
+          WebMapboxGL._externalStyles = text;
           this.status = 'web-mapbox-gl external CSS fetched'
           this.requestUpdate();
         });
@@ -50,7 +50,7 @@ class WebMapboxGL extends WebMap {
             }
           });
           // set the mapbox access token
-          mapboxgl.accessToken = WebMapboxGL.keys.mapbox;
+          mapboxgl.accessToken = WebMapboxGL._keys.mapbox;
           map.on('load', () => {
             this.status = 'web-mapbox-gl ready';
             this.dispatchEvent(new CustomEvent('map-ready'));
