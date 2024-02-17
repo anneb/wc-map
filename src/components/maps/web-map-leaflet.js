@@ -70,10 +70,84 @@ class WebMapLeaflet extends WebMap {
       return;
     }
     // add layer to leaflet map
+    // to do: layerFactory
+    const options = {};
+    if (layer.source.attribution) {
+      options.attribution = layer.source.attribution;
+    }
+    if (layer.source.tileSize) {
+      options.tileSize = layer.source.tileSize;
+    }
+    if (layer.source.zoomOffset) {
+      options.zoomOffset = layer.source.zoomOffset;
+    }
+    if (layer.source.minzoom) {
+      options.minZoom = layer.source.minzoom;
+    }
+    if (layer.source.maxzoom) {
+      options.maxNativeZoom = layer.source.maxzoom;
+      options.maxZoom = layer.source.maxzoom;
+    }
+    if (layer.paint) {
+      switch (layer.type) {
+        case 'line':
+          options.style = (_feature) => {
+            return {
+              stroke: layer.paint['line-color'] !== 'rgba(0, 0, 0, 0)',
+              color: layer.paint['line-color'],
+              weight: layer.paint['line-width'],
+              opacity: layer.paint['line-opacity']
+            }
+          }
+          options.style = {};
+          options.style['stroke-color'] = layer.paint['line-color'];
+          options.style.weight = layer.paint['line-width'];
+          break;
+        case 'fill':
+          options.style = (_feature) => {
+            return {
+              stroke: layer.paint['fill-outline-color'] !== layer.paint['fill-color'],
+              color: layer.paint['fill-outline-color'] ? layer.paint['fill-outline-color'] : layer.paint['fill-color'],
+              weight: layer.paint['fill-outline-color'] ? 1 : 0,
+              opacity: layer.paint['fill-opacity'],
+              fill: true,
+              fillColor: layer.paint['fill-color'],
+              fillOpacity: layer.paint['fill-opacity']
+            };
+          }
+          break;
+        case 'circle':
+          options.pointToLayer = (_feature, latlng) => {
+            return window.L.circleMarker(latlng, {
+              radius: layer.paint['circle-radius'],
+              fillColor: layer.paint['circle-color'],
+              color: layer.paint['circle-stroke-color'],
+              weight: layer.paint['circle-stroke-width'],
+              opacity: layer.paint['circle-opacity'],
+              fillOpacity: layer.paint['circle-opacity']
+            });
+          }
+          break;
+        default:
+          console.error(`web-map-leaflet: unsupported layer type for geojson: ${layer.type}`);
+      }
+    }
+    if (layer.id) {
+      options.id = layer.id;
+    }
     switch (layer?.source?.type) {
       case 'geojson':
-        window.L.geoJSON(layer.source.data).addTo(this._map);
+        window.L.geoJSON(layer.source.data, options).addTo(this._map);
         break;
+      case 'raster':
+        if (layer.source.tiles[0] === 'https://tile.openstreetmap.org/{z}/{x}/{y}.png') {
+          window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', options).addTo(this._map);
+        } else {
+          window.L.tileLayer(layer.source.tiles[0], options).addTo(this._map);
+        }
+        break;
+      default:
+        console.error(`web-map-leaflet: unsupported layer type: ${layer.source.type}`);
     }
   }
   _nativeUpdateView() {

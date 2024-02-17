@@ -41,11 +41,11 @@ export class MapPositioner extends LitElement {
     display: block;
     width: 100%;
     height: 100%;
+    pointer-events: none;
   }
   .outercontainer {
     position: relative;
     height: 100%;
-    pointer-events: none;
     background: transparent;
     border: 1px solid black;
   }

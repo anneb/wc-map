@@ -7,7 +7,6 @@ import './maps/web-maplibre-gl.js';
 import './maps/web-mapbox-gl.js';
 import './maps/web-map-openlayers.js';
 import './tools/map-tool-coordinates.js';
-import './internal/map-positioner.js';
 
 class MapApp extends LitElement {
   // create styles for this element
@@ -18,7 +17,7 @@ class MapApp extends LitElement {
             height: 400px;
             box-sizing: border-box;
         }
-        web-map, web-map-leaflet, web-maplibre-gl, web-mapbox-gl, web-map-openlayers, map-tool-positioner {
+        web-map, web-map-leaflet, web-maplibre-gl, web-mapbox-gl, web-map-openlayers {
             display: block;
             width: 300px;
             height: 300px;
@@ -56,19 +55,14 @@ class MapApp extends LitElement {
           <div slot="top-left">6</div>
           <div slot="top-left">7</div>
           <div slot="top-left">8</div>
-          <div slot="top-left">9</div>
-          <div slot="top-left">10</div>
-          <div slot="top-left">11</div>
-          <div slot="top-left">12</div>
-          <div slot="top-left">13</div>
-          <div slot="top-left">14</div>
-          <div slot="top-left">15</div>
-          <span slot="top-left">aa</span>
+          <div slot="top-center">top-center</div>
+          <div slot="bottom-left">bottom-left</div>
           <div slot="middle-center">
             <div>center above</div>
             <div>center below</div>
           </div>
           <div slot="top-right">Legenda</div>
+          <div slot="bottom-right">bottom-right</div>
         </web-map-leaflet>
         <web-maplibre-gl></web-maplibre-gl>
         <web-mapbox-gl></web-mapbox-gl>

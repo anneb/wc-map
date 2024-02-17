@@ -31,18 +31,15 @@ export async function fetchText(url) {
 }
 
 export async function fetchSource(layer) {
-  if (layer?.source?.type === 'geojson' && layer.source.url) {
+  if (layer?.source?.type === 'geojson' && typeof layer.source.data === 'string') {
     try {
-      const sourceUrl = layer._baseUrl ? new URL(layer.source.url, layer._baseUrl).href : layer.source.url;
+      const sourceUrl = layer._baseUrl ? new URL(layer.source.data, layer._baseUrl).href : layer.source.data;
       const source = await fetchJson(sourceUrl);
       if (!source) {
         console.error(`Error loading GeoJSON data from ${sourceUrl}: no data`);
         return;
       }
-      layer.source = {
-        type: 'geojson',
-        data: source
-      }
+      layer.source.data = source;
     } catch (error) {
       console.error(`Error loading GeoJSON data: ${error.message}`);
     }
