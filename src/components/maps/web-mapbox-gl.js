@@ -3,7 +3,7 @@ import { html } from 'lit';
 import { WebMap } from './web-map.js';
 import { fetchText } from '../../utils/fetchdata.js';
 
-class WebMapboxGL extends WebMap {
+export class WebMapboxGL extends WebMap {
 
   render() {
     return html`

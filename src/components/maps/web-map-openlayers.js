@@ -9,7 +9,7 @@ import {fromLonLat} from 'ol/proj.js';
 import { WebMap } from './web-map.js';
 import { fetchText } from '../../utils/fetchdata.js';
 
-class WebMapOpenLayers extends WebMap {
+export class WebMapOpenLayers extends WebMap {
 
   render() {
     return html`

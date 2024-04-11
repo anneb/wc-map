@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, css } from "lit";
 import { WebMap } from "../maps/web-map";
 
 /**
@@ -7,6 +7,13 @@ import { WebMap } from "../maps/web-map";
   * @attr lng - The longitude of the mouse position, set by the map
 */
 export class MapToolCoordinates extends LitElement {
+  static styles = [
+      css`
+      .scale-down {
+        font-size: 80%;
+      }`
+  ]
+
   static get properties() {
     return {
       for: { type: String },
@@ -51,7 +58,7 @@ export class MapToolCoordinates extends LitElement {
     if (this.lat === null) {
       return html`<div>Move the mouse over the map</div>`;
     }
-    return html`Latitude: ${this.lat}, Longitude: ${this.lng}`;        
+    return html`<div class="scale-down">Latitude: ${this.lat}, Longitude: ${this.lng}</div>`;
   }
   _mouseMovedOnMap(e) {
     this.lat = e.detail.lat;

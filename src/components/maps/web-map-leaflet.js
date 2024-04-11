@@ -3,7 +3,7 @@ import { WebMap } from './web-map.js';
 import { fetchText, fetchLayer } from '../../utils/fetchdata.js';
 import '../internal/map-positioner.js';
 
-class WebMapLeaflet extends WebMap {
+export class WebMapLeaflet extends WebMap {
   
   constructor() {
     super();
