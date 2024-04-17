@@ -2,6 +2,7 @@ import { html } from 'lit';
 
 import { WebMap } from './web-map.js';
 import { fetchText } from '../../utils/fetchdata.js';
+import '../internal/map-positioner.js';
 
 export class WebMapLibreGL extends WebMap {
 
@@ -11,6 +12,15 @@ export class WebMapLibreGL extends WebMap {
         ${WebMapLibreGL.externalStyles}
       </style>
       <div id="map"></div>
+      <map-positioner>
+        <slot name="top-left" slot="top-left"></slot>
+        <slot name="top-center" slot="top-center"></slot>
+        <slot name="top-right" slot="top-right"></slot>
+        <slot name="middle-center" slot="middle-center"></slot>
+        <slot name="bottom-left" slot="bottom-left"></slot>
+        <slot name="bottom-center" slot="bottom-center"></slot>
+        <slot name="bottom-right" slot="bottom-right"></slot>
+      </map-positioner>
     `;
   }
 
@@ -42,32 +52,28 @@ export class WebMapLibreGL extends WebMap {
             container: this.shadowRoot.querySelector('#map'),
             style: {
               version: 8,
-              center: [5.1, 52.2522],
-              zoom: 4.0,
+              center: [0, 0],
+              zoom: 0,
               pitch: 0,
               sources: {},
               layers: []
             }
           });
           map.on('load', () => {
-            map.on('idle', () => {
-              this.dispatchEvent(new CustomEvent('map-ready'));
-              console.log('web-maplibre-gl map-ready event dispatched')
-              this.status = 'web-maplibre-gl ready';
-            });
-            map.addLayer({
-              id: 'world',
-              type: 'fill',
-              source: {
-                type: 'geojson',
-                data: './data/world.geo.json',
-                attribution: '<a href="https://www.naturalearthdata.com/">Natural Earth</a>'
-              },
-              paint: {
-                'fill-color': '#bbcce4',
-                'fill-outline-color': '#3388ff'
+            this._map = map;
+            map.on('mousemove', (e) => {
+              this.dispatchEvent(new CustomEvent('map-mousemove', 
+              { 
+                detail: {
+                  originalEvent: e.originalEvent,
+                  offsetX: e.point.x,
+                  offsetY: e.point.y,
+                  lat: e.lngLat.lat,
+                  lng: e.lngLat.lng
+                }
               }
-            })
+            ))});
+            this._mapReady()
           });
         } catch (error) {
           this.status = error.message;
@@ -78,6 +84,17 @@ export class WebMapLibreGL extends WebMap {
       console.error('web-maplibre-gl: ' + error.message)
       this.status = error.message;
     }
+  }
+  _addLayer(layer) {
+    if (!this._map) {
+      console.error('web-maplibre-gl: map not ready for addLayer')
+      return;
+    }
+    if (!layer.source) {
+      console.warn(`Layer ${layer.id} has no source`);
+      return;
+    }
+    this._map.addLayer(layer);
   }
 }
 

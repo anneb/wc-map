@@ -1,5 +1,6 @@
 [
   {
+    "id": "osm-tiles",
     "type": "raster",
     "source": {
       "type": "raster",
@@ -17,12 +18,11 @@
     }
   },
   {
+    "id": "world-fill",
     "type": "fill",
     "source": {
       "type": "geojson",
       "data": "../data/world.geo.json",
-      "minzoom": 0,
-      "maxzoom": 5,
       "attribution": "Natural Earth"
     },
     "layout": {},
