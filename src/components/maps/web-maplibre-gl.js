@@ -59,10 +59,24 @@ export class WebMapLibreGL extends WebMap {
               layers: []
             }
           });
+          
           map.on('load', () => {
-            this._map = map;
+            this._map = map; // add the native map to WebMap
+            this._maplibrary = maplibregl; // add the native map library to WebMap
             map.on('mousemove', (e) => {
               this.dispatchEvent(new CustomEvent('map-mousemove', 
+              { 
+                detail: {
+                  originalEvent: e.originalEvent,
+                  offsetX: e.point.x,
+                  offsetY: e.point.y,
+                  lat: e.lngLat.lat,
+                  lng: e.lngLat.lng
+                }
+              }
+            ))});
+            map.on('click', (e) => {
+              this.dispatchEvent(new CustomEvent('map-mouseclick', 
               { 
                 detail: {
                   originalEvent: e.originalEvent,

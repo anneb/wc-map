@@ -37,6 +37,7 @@ export class WebMap extends LitElement {
   constructor() {
     super();
     this._map = null;
+    this._maplibrary = null;
     this.lat = this.lon = this.zoom = this.pitch = this.bearing = 0;
     this.mapLayers = '';
     this.mapStyle = '';
