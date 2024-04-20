@@ -87,16 +87,22 @@ export class WebMapLibreGL extends WebMap {
                 }
               }
             ))});
+            this.updateResolution();
+            map.on('zoomend', () => {
+              this.updateResolution();
+              this.dispatchEvent(new CustomEvent('map-zoomend', { detail: { zoom: map.getZoom() } }));
+            });
             this._mapReady()
           });
         } catch (error) {
-          this.status = error.message;
+          throw new Error(error.message);
         }
       };
       document.head.appendChild(script);
     } catch (error) {
       console.error('web-maplibre-gl: ' + error.message)
       this.status = error.message;
+      this.MaploadedReject(error.message);
     }
   }
   _addLayer(layer) {
@@ -109,6 +115,22 @@ export class WebMapLibreGL extends WebMap {
       return;
     }
     this._map.addLayer(layer);
+  }
+  getAngle (latlng1, latlng2) {
+    const rad = Math.PI / 180,
+        lat1 = latlng1.lat * rad,
+        lat2 = latlng2.lat * rad,
+        a = Math.sin(lat1) * Math.sin(lat2) +
+          Math.cos(lat1) * Math.cos(lat2) * Math.cos((latlng2.lng - latlng1.lng) * rad);
+    return Math.acos(Math.min(a, 1)) / rad;
+  }
+  updateResolution() {
+    if (!this._map) {
+      return;
+    }
+    const map = this._map;
+    const y = map._container.clientHeight / 2;
+    this.resolution = this.getAngle(map.unproject([0, y]), map.unproject([1, y]));
   }
 }
 
