@@ -52,58 +52,46 @@ export class MapToolBoundingBox extends MapToolBase {
     if (!this.webMapElement) {
       return html`<div>${this.constructor.name}: No map element found</div>`;
     }
-    if (this.east === null && this.west === null) {
-      return html`<div>Click to define bbox</div>`;
+    let factor = 7;
+    if (this.webMapElement.resolution > 0) {
+      factor = -Math.round(Math.log10(this.webMapElement.resolution));
     }
-    if (this.east === null || this.west === null) {
-      return html`<div>click to finish bbox</div>`;
-    }
+    return html`Boundingbox<br>
+      <button @click="${()=>this.resetBbox()}">Reset to current map extent</button><br>
+      west: ${this.west?.toFixed(factor)}, south: ${this.south?.toFixed(factor)}, east: ${this.east?.toFixed(factor)}, north:  ${this.north?.toFixed(factor)}`
   }
 
   activate() {
     if (!this.isActivated) {
       super.activate();
       this.east = this.west = this.north = this.south = null;
-      this.webMapHandler = MapToolBoundingboxHandlerFactory.getHandler(this.webMapElement);
-      this.webMapElement.addEventListener('map-mouseclick', this._boundClickOnMap);
-      this.webMapElement.addEventListener('map-mousemove', this._boundMouseMoveOnMap);
+      this.webMapElement.addEventListener('map-update-boundingbox', this._boundUpdateBoundingBox);
+      this.bboxHandler = MapToolBoundingboxHandlerFactory.getHandler(this.webMapElement);
+      this.bboxHandler.createBoundingBox({west: this.west, south: this.south, east: this.east, north: this.north});
       this.isActivated = true;
     }
+  }
+  resetBbox() {
+    this.bboxHandler.deleteBoundingBox();
+    this.bboxHandler.createBoundingBox();
   }
   deactivate() {
     if (this.isActivated) {
       super.deactivate();
+      this.webMapElement.removeEventListener('map-update-boundingbox', this._boundUpdateBoundingBox);
+      this.bboxHandler.deleteBoundingBox();
       this.east = this.west = this.north = this.south = null;
-      this.webMapElement.removeEventListener('map-mouseclick', this._boundClickOnMap);
-      this.webMapElement.removeEventListener('map-mousemove', this._boundMouseMoveOnMap);
       this.isActivated = false;
     }
   }
-  clickMap(e) {
-    if (this.markers.length < 2) {
-      const marker = this.webMapHandler.addMarker(e.detail.lng, e.detail.lat);
-      this.markers.push(marker);
-    }
-    if (this.east === null && this.west === null) {
-      this.east = e.detail.lng;
-    } else {
-      this.east = Math.max(this.east, e.detail.lng);
-      this.west = Math.min(this.west, e.detail.lng);
-    }
-    if (this.north === null && this.south === null) {
-      this.north = e.detail.lat;
-    } else {
-      this.north = Math.max(this.north, e.detail.lat);
-      this.south = Math.min(this.south, e.detail.lat);
-    }
+
+  updateBoundingBox(e) {
+    this.east = e.detail.east;
+    this.west = e.detail.west;
+    this.north = e.detail.north;
+    this.south = e.detail.south;
   }
-  moveOnMap(e) {
-    if (this.east !== null && this.west !== null) {
-      return; // nothing to update
-    }
-  }
-  _boundClickOnMap = (e) => this.clickMap(e);
-  _boundMouseMoveOnMap = (e) => this.moveOnMap(e);
+  _boundUpdateBoundingBox = (e) => this.updateBoundingBox(e)
 }
 
 customElements.define('map-tool-boundingbox', MapToolBoundingBox);
