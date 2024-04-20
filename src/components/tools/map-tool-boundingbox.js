@@ -1,6 +1,6 @@
 import { html, css } from 'lit-element';
-import { MapToolBase } from "./map-tool-base";
-import { MapToolBoundingboxAPIFactory } from '../../factories/map-tool-boudingbox-api-factory';
+import { MapToolBase } from "./map-tool-base.js";
+import { MapToolBoundingboxHandlerFactory } from '../../factories/map-tool-boudingbox-handler-factory.js';
 
 /**
   * @prop {String} for - The selector for the map to listen to
@@ -64,7 +64,7 @@ export class MapToolBoundingBox extends MapToolBase {
     if (!this.isActivated) {
       super.activate();
       this.east = this.west = this.north = this.south = null;
-      this.webMapAPI = MapToolBoundingboxAPIFactory.getAPI(this.webMapElement);
+      this.webMapHandler = MapToolBoundingboxHandlerFactory.getHandler(this.webMapElement);
       this.webMapElement.addEventListener('map-mouseclick', this._boundClickOnMap);
       this.webMapElement.addEventListener('map-mousemove', this._boundMouseMoveOnMap);
       this.isActivated = true;
@@ -81,7 +81,7 @@ export class MapToolBoundingBox extends MapToolBase {
   }
   clickMap(e) {
     if (this.markers.length < 2) {
-      const marker = this.webMapAPI.addMarker(e.detail.lng, e.detail.lat);
+      const marker = this.webMapHandler.addMarker(e.detail.lng, e.detail.lat);
       this.markers.push(marker);
     }
     if (this.east === null && this.west === null) {

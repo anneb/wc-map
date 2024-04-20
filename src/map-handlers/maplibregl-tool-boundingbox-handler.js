@@ -1,7 +1,7 @@
 // maplibregl-handler.js
 import { MapToolBoundingboxInterface  } from '../interfaces/map-tool-boundingbox-interface.js';
 
-class MaplibreglToolBoundingboxAPI extends MapToolBoundingboxInterface {
+class MaplibreglToolBoundingboxHandler extends MapToolBoundingboxInterface {
     constructor(mapInstance) {
         super();
         this.webMap = mapInstance;
@@ -44,4 +44,4 @@ class MaplibreglToolBoundingboxAPI extends MapToolBoundingboxInterface {
     }
 }
 
-export { MaplibreglToolBoundingboxAPI };
+export { MaplibreglToolBoundingboxHandler };
