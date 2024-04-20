@@ -38,11 +38,16 @@ export class WebMap extends LitElement {
     super();
     this._map = null;
     this._maplibrary = null;
+    this.mapLoadedPromise = new Promise((resolve, reject) => {
+      this.mapLoadedResolve = resolve;
+      this.mapLoadedReject = reject;
+    });
     this.lat = this.lon = this.zoom = this.pitch = this.bearing = 0;
     this.mapLayers = '';
     this.mapStyle = '';
     this.mapLayersArray = null;
     this.mapStyleObject = null;
+    this.resolution = null;
   }
 
   render() {
@@ -77,6 +82,9 @@ export class WebMap extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     // derived classes should set this.map when the map is ready
+  }
+  getMap() {
+    return this.mapLoadedPromise;
   }
   async _loadLayersAndStyles() {
     console.log('loadLayersAndStyles');
@@ -125,6 +133,7 @@ export class WebMap extends LitElement {
     await this._updateView();
     await this._loadLayersAndStyles();
     this.dispatchEvent(new CustomEvent('map-ready'));
+    this.mapLoadedResolve(this._map, this._maplibrary);
   }
 }
 
