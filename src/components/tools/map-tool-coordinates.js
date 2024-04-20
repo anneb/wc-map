@@ -52,7 +52,11 @@ export class MapToolCoordinates extends MapToolBase {
     if (this.lat === null) {
       return html`<div>Move the mouse over the map</div>`;
     }
-    return html`<div class="scale-down">Latitude: ${this.lat}, Longitude: ${this.lng}</div>`;
+    let factor = 7;
+    if (this.webMapElement.resolution) {
+      factor = -Math.round(Math.log10(this.webMapElement.resolution));
+    }
+    return html`<div class="scale-down">Latitude: ${this.lat?.toFixed(factor)}, Longitude: ${this.lng?.toFixed(factor)}</div>`;
   }
 
   _mouseMovedOnMap(e) {
