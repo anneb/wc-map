@@ -74,6 +74,7 @@ class MaplibreglToolBoundingboxHandler extends MapToolBoundingboxInterface {
           }
         }
         map.addLayer(this.bboxLayer);
+        this.updateBoundingBox();
       }) 
     }
     addMarker(lng, lat, color = '#ffffff', borderColor = '#333') {

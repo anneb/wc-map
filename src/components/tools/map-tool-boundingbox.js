@@ -18,10 +18,11 @@ export class MapToolBoundingBox extends MapToolBase {
   static get properties() {
     return {
       ...MapToolBase.properties,
-      east: { type: Number, reflect: true},
-      west: { type: Number, reflect: true},
-      north: { type: Number, reflect: true},
-      south: { type: Number, reflect: true}
+      east: { type: Number},
+      west: { type: Number},
+      north: { type: Number},
+      south: { type: Number},
+      bbox: { type: String, reflect : true}
     }
   }
 
@@ -29,6 +30,7 @@ export class MapToolBoundingBox extends MapToolBase {
     super();
     this.lat = this.lng = null;
     this.markers = [];
+    this.bbox = [];
   }
 
   connectedCallback() {
@@ -52,13 +54,9 @@ export class MapToolBoundingBox extends MapToolBase {
     if (!this.webMapElement) {
       return html`<div>${this.constructor.name}: No map element found</div>`;
     }
-    let factor = 7;
-    if (this.webMapElement.resolution > 0) {
-      factor = -Math.round(Math.log10(this.webMapElement.resolution));
-    }
     return html`Boundingbox<br>
       <button @click="${()=>this.resetBbox()}">Reset to current map extent</button><br>
-      west: ${this.west?.toFixed(factor)}, south: ${this.south?.toFixed(factor)}, east: ${this.east?.toFixed(factor)}, north:  ${this.north?.toFixed(factor)}`
+      west: ${this.west}, south: ${this.south}, east: ${this.east}, north:  ${this.north}`
   }
 
   activate() {
@@ -86,10 +84,15 @@ export class MapToolBoundingBox extends MapToolBase {
   }
 
   updateBoundingBox(e) {
-    this.east = e.detail.east;
-    this.west = e.detail.west;
-    this.north = e.detail.north;
-    this.south = e.detail.south;
+    let factor = this.prevFactor === undefined ? 7 : this.prevFactor;
+    if (this.prevResolution !== this.webMapElement.resolution) {
+      this.prevResolution = this.webMapElement.resolution;
+      this.prevFactor = factor = -Math.round(Math.log10(this.webMapElement.resolution));
+    }
+    this.east = parseFloat(e.detail.east.toFixed(factor));
+    this.west = parseFloat(e.detail.west.toFixed(factor));
+    this.north = parseFloat(e.detail.north.toFixed(factor));
+    this.south = parseFloat(e.detail.south.toFixed(factor));
   }
   _boundUpdateBoundingBox = (e) => this.updateBoundingBox(e)
 }
