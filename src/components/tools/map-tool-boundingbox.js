@@ -18,11 +18,10 @@ export class MapToolBoundingBox extends MapToolBase {
   static get properties() {
     return {
       ...MapToolBase.properties,
-      east: { type: Number},
-      west: { type: Number},
-      north: { type: Number},
-      south: { type: Number},
-      bbox: { type: String, reflect : true}
+      east: { type: Number, reflect: true},
+      west: { type: Number, reflect: true},
+      north: { type: Number, reflect: true},
+      south: { type: Number, reflect: true}
     }
   }
 
@@ -30,7 +29,6 @@ export class MapToolBoundingBox extends MapToolBase {
     super();
     this.lat = this.lng = null;
     this.markers = [];
-    this.bbox = [];
   }
 
   connectedCallback() {
